@@ -1,0 +1,346 @@
+import java.util.HashMap; // TO STORE AND LOOK UP PLANT SPACING RECOMMENDATIONS AND FERTILIZER RECOMMENDATIONS
+import java.util.Map; //  FOR PLANT SPACING AND FERTILIZER RECOMMENDATIONS
+import java.util.Scanner; // TO GET USER INPUT
+
+
+abstract class PlantCalculator {
+    protected double area; //  (IN SQUARE FEET)
+    protected double spacing; // (IN INCHES)
+
+    public PlantCalculator(double area, double spacing) {
+        this.area = area; // ASSIGNING THE AREA
+        this.spacing = spacing; //  SPACING ATTRIBUTE
+    }
+
+   
+    public abstract double calculateNumberOfPlants(); // TO CALCULATE NUMBER OF PLANTS
+}
+
+
+class SquareSpacingCalculator extends PlantCalculator {
+    public SquareSpacingCalculator(double area, double spacing) {
+        super(area, spacing); // CALL THE CONSTRUCTOR 
+    }
+
+    @Override
+    public double calculateNumberOfPlants() {
+        double spacingInFeet = spacing / 12; //  (1 FOOT = 12 INCHES)
+        double areaPerPlant = spacingInFeet * spacingInFeet;  
+        return area / areaPerPlant; 
+    }
+}
+
+
+class TriangularSpacingCalculator extends PlantCalculator {
+    public TriangularSpacingCalculator(double area, double spacing) {
+        super(area, spacing); 
+    }
+
+    @Override
+    public double calculateNumberOfPlants() {
+        double spacingInFeet = spacing / 12; //  (1 FOOT = 12 INCHES)
+        double areaPerPlant = (Math.sqrt(3) / 4) * (spacingInFeet * spacingInFeet); // TRIANGULAR AREA PER PLANT (HEXAGONAL GRID)
+        return area / areaPerPlant; 
+    }
+}
+
+// MAIN CLASS - STARTS THE APPLICATION
+public class GreenGrowGrid {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in); // CREATE SCANNER OBJECT TO GET USER INPUT
+
+        // BOXED INTRODUCTION
+        System.out.println("+-------------------------------------------------------------------------+"); 
+        System.out.println("|                 Welcome to the Plant Calculator App!                    |"); 
+        System.out.println("| This application helps you calculate the number of plants you can fit   |"); 
+        System.out.println("| in a given area, calculate the area required for a specific number of   |"); 
+        System.out.println("| plants, determine the spacing between plants, and estimate the amount   |"); 
+        System.out.println("| of organic fertilizer required for your plants. Please follow the       |"); 
+        System.out.println("| instructions below to get started.                                      |"); 
+        System.out.println("+-------------------------------------------------------------------------+"); 
+        System.out.println(); 
+
+        // SPACING RECOMMENDATIONS FOR COMMON PLANTS
+        Map<String, Double> plantSpacingRecommendations = new HashMap<>(); 
+        plantSpacingRecommendations.put("Tomato", 18.0); 
+        plantSpacingRecommendations.put("Pepper", 18.0); 
+        plantSpacingRecommendations.put("Lettuce", 12.0); 
+        plantSpacingRecommendations.put("Carrot", 3.0); 
+        plantSpacingRecommendations.put("Cabbage", 24.0); 
+
+        // PREDEFINED ORGANIC FERTILIZER RECOMMENDATIONS (POUNDS PER 100 SQUARE FEET)
+        Map<String, Double> organicFertilizerRecommendations = new HashMap<>(); 
+        organicFertilizerRecommendations.put("Tomato", 2.5); 
+        organicFertilizerRecommendations.put("Pepper", 2.0); 
+        organicFertilizerRecommendations.put("Lettuce", 1.0); 
+        organicFertilizerRecommendations.put("Carrot", 1.5); 
+        organicFertilizerRecommendations.put("Cabbage", 3.0); 
+
+        // FLAG TO CONTROL THE MAIN LOOP OF THE APPLICATION
+        boolean continueCalculating = true; 
+
+        // MAIN MENU LOOP
+        while (continueCalculating) { 
+            try {
+                
+                System.out.println("+-------------------------------------------------------------------------+"); 
+                System.out.println("|                              Choose an option:                          |"); 
+                System.out.println("|  1. Calculate Number of Plants                                          |"); 
+                System.out.println("|  2. Calculate Area                                                      |"); 
+                System.out.println("|  3. Calculate Spacing                                                   |"); 
+                System.out.println("|  4. Calculate Organic Fertilizer                                        |"); 
+                System.out.println("|  5. Exit                                                                |"); 
+                System.out.println("+-------------------------------------------------------------------------+"); 
+
+                // GET USER OPTION WITH ERROR HANDLING
+                int option = getIntInput(scanner, "Enter your choice (1-5): "); // GET USER'S CHOICE FROM THE MENU
+
+                // VARIABLES FOR AREA, SPACING, AND NUMBER OF PLANTS
+                double area = 0; 
+                double spacing = 0; 
+                double numberOfPlants = 0; 
+
+                // SWITCH STATEMENT TO HANDLE DIFFERENT CASES
+                switch (option) { 
+                    case 1: 
+                        System.out.println("+-------------------------------------------------------------------------+"); 
+                        System.out.println("|                Choose measurement unit for area:                        |"); 
+                        System.out.println("|  1. Square Feet                                                         |"); 
+                        System.out.println("|  2. Square Meters                                                       |"); 
+                        System.out.println("+-------------------------------------------------------------------------+"); 
+
+                        // GET USER CHOICE FOR UNIT (SQUARE FEET OR SQUARE METERS)
+                        int unitChoice = getIntInput(scanner, "Enter your choice (1-2): ");
+
+                        // PROMPT USER FOR AREA INPUT AND CONVERT IF NECESSARY
+                        area = getPositiveDoubleInput(scanner, "Enter area covered: "); 
+                        if (unitChoice == 2) { // IF USER CHOSE SQUARE METERS
+                            area = area * 10.7639; 
+                        }
+
+                        // GET SPACING BETWEEN PLANTS
+                        spacing = getPositiveDoubleInput(scanner, "Enter spacing between plants (in inches): "); 
+
+                        // CHOOSE SPACING TYPE (SQUARE OR TRIANGULAR)
+                        System.out.println("+-------------------------------------------------------------------------+"); 
+                        System.out.println("|                          Choose spacing type:                           |"); 
+                        System.out.println("|  1. Square Spacing:                                                     |"); 
+                        System.out.println("|                                                                         |");
+                        System.out.println("|                       0   +   +   0   +   +   0   +   +   0             |"); 
+                        System.out.println("|                       +           +           +           +             |"); 
+                        System.out.println("|                       +           +           +           +             |"); 
+                        System.out.println("|                       +           +           +           +             |"); 
+                        System.out.println("|                       0   +   +   0   +    +  0   +   +   0             |");
+                        System.out.println("|                                                                         |"); 
+                        System.out.println("|  2. Triangular Spacing:                                                 |"); 
+                        System.out.println("|                                                                         |");
+                        System.out.println("|                       0   +   +   0   +   +   0   +   +   0             |"); 
+                        System.out.println("|                         +       +   +       +   +       +               |");
+                        System.out.println("|                           +   +       +   +       +   +                 |");
+                        System.out.println("|                             0           0           0                   |");
+                        System.out.println("|                                                                         |");
+                        System.out.println("+-------------------------------------------------------------------------+");
+                        
+
+                        // SPACING TYPE CHOICE FROM USER
+                        int spacingChoice = getIntInput(scanner, "Enter your choice (1-2): "); 
+
+                        // BASED ON SPACING CHOICE
+                        PlantCalculator calculator; 
+                        if (spacingChoice == 1) {
+                            calculator = new SquareSpacingCalculator(area, spacing); 
+                        } else {
+                            calculator = new TriangularSpacingCalculator(area, spacing); 
+                        }
+
+                        // CALCULATE NUMBER OF PLANTS 
+                        numberOfPlants = calculator.calculateNumberOfPlants(); 
+                        System.out.println("+-------------------------------------------------------------------------+");
+                        System.out.printf("| Number of plants needed: %.2f                                         |\n", numberOfPlants); 
+                        System.out.println("+-------------------------------------------------------------------------+"); 
+                        break; 
+                        case 2: 
+                        
+                        numberOfPlants = getPositiveDoubleInput(scanner, "Enter number of plants: ");
+                        spacing = getPositiveDoubleInput(scanner, "Enter spacing between plants (in inches): ");
+
+                        
+                        double spacingInFeet = spacing / 12; 
+                        double areaPerPlant = spacingInFeet * spacingInFeet; 
+                        area = numberOfPlants * areaPerPlant; 
+
+                        
+                        double areaInSquareMeters = area * 0.092903; // CONVERT SQUARE FEET TO SQUARE METERS
+                        System.out.println("+-------------------------------------------------------------------------+");
+                        System.out.printf("| Total area required: %.2f square feet (%.2f square meters)            |\n", area, areaInSquareMeters);
+                        System.out.println("+-------------------------------------------------------------------------+");
+                        break;
+
+                        case 3: 
+                        
+                        numberOfPlants = getPositiveDoubleInput(scanner, "Enter number of plants: ");
+
+                      
+                        System.out.println("+-------------------------------------------------------------------------+");
+                        System.out.println("| Choose the unit for area covered:                                       |");
+                        System.out.println("| 1. Square Feet                                                          |");
+                        System.out.println("| 2. Square Meters                                                        |");
+                        System.out.println("+-------------------------------------------------------------------------+");
+
+                     
+                        unitChoice = getIntInput(scanner, "Enter your choice (1 or 2): ");
+                        
+                      
+                        area = getPositiveDoubleInput(scanner, "Enter area covered: ");
+                        
+                     
+                        if (unitChoice == 2) {
+                            area = area * 10.7639; 
+                        }
+
+                        // CALCULATE AREA PER PLANT
+                        areaPerPlant = area / numberOfPlants; 
+
+                        // CALCULATE SPACING BASED ON AREA PER PLANT 
+                        spacing = Math.sqrt(areaPerPlant) * 12; 
+
+                        // 
+                        System.out.println("+-------------------------------------------------------------------------+");
+                        System.out.printf("| Spacing between plants: %.2f inches                                    |\n", spacing);
+                        System.out.println("+-------------------------------------------------------------------------+");
+
+                        // 
+                        System.out.print("Enter the type of plant (Tomato, Pepper, Lettuce, Carrot, Cabbage):" );
+                        String plantType = scanner.nextLine();
+
+                        // 
+                        if (plantSpacingRecommendations.containsKey(plantType)) {
+                            double recommendedSpacing = plantSpacingRecommendations.get(plantType); 
+                            if (spacing < recommendedSpacing) { 
+                                System.out.println("+-------------------------------------------------------------------------+");
+                                System.out.printf("| Warning: The spacing of %.2f inches is less than the recommended %.2f |\n", spacing, recommendedSpacing);
+                                System.out.printf("| spacing for %s.                                                       |\n", plantType);
+                                System.out.println("+-------------------------------------------------------------------------+");
+                            } else {
+                                System.out.println("+-------------------------------------------------------------------------+");
+                                System.out.printf("| The spacing of %.2f inches is acceptable for %s.                      |\n", spacing, plantType);
+                                System.out.println("+-------------------------------------------------------------------------+");
+                            }
+                        } else {
+                            System.out.println("+-------------------------------------------------------------------------+");
+                            System.out.println("| No spacing recommendations available for that plant type.               |");
+                            System.out.println("+-------------------------------------------------------------------------+");
+                        }
+                        break;
+                    
+
+                    case 4: // CALCULATE ORGANIC FERTILIZER
+                        System.out.println("+-------------------------------------------------------------------------+");
+                        System.out.println("|                Choose measurement unit for area:                        |");
+                        System.out.println("|  1. Square Feet                                                         |");
+                        System.out.println("|  2. Square Meters                                                       |");
+                        System.out.println("+-------------------------------------------------------------------------+");
+                        int fertilizerUnitChoice = getIntInput(scanner, "Enter your choice (1-2): ");
+
+
+                        area = getPositiveDoubleInput(scanner, "Enter area to be fertilized: ");
+                        if (fertilizerUnitChoice == 2) { 
+                            area = area * 10.7639;
+                        }
+
+                      
+                        double spacingInInches = getPositiveDoubleInput(scanner, "Enter spacing between plants (in inches): ");
+                        double spacingInFeet1 = spacingInInches / 12; 
+                        System.out.print("Enter the type of plant (Tomato, Pepper, Lettuce, Carrot, Cabbage): ");
+                        scanner.nextLine();
+                        plantType = scanner.nextLine();
+
+                       
+                        if (organicFertilizerRecommendations.containsKey(plantType)) {
+                            double recommendedFertilizer = organicFertilizerRecommendations.get(plantType); 
+                            double fertilizerAmount = (recommendedFertilizer / 100) * area; 
+
+                            
+                            double areaPerPlant1 = spacingInFeet1 * spacingInFeet1; 
+                            double numberOfPlants1 = area / areaPerPlant1;
+
+                            // CALCULATE FERTILIZER PER PLANT
+                            double fertilizerPerPlant = fertilizerAmount / numberOfPlants1;
+
+                         
+                            System.out.println("+-------------------------------------------------------------------------+");
+                            System.out.printf("| Total organic fertilizer needed for %s: %.2f pounds                   |\n", plantType, fertilizerAmount);
+                            System.out.printf("| Organic fertilizer needed per plant: %.2f pounds                      |\n", fertilizerPerPlant);
+                            System.out.println("+-------------------------------------------------------------------------+");
+                        } else {
+                            System.out.println("+-------------------------------------------------------------------------+");
+                            System.out.println("| No organic fertilizer recommendations available for that plant type.    |");
+                            System.out.println("+-------------------------------------------------------------------------+");
+                        }
+                        break;
+
+                    case 5: 
+                        continueCalculating = false;
+                        System.out.println("+-------------------------------------------------------------------------+");
+                        System.out.println("|                       Exiting the program. Goodbye!                     |");
+                        System.out.println("+-------------------------------------------------------------------------+");
+                        break;
+
+                    default: 
+                        System.out.println("+-------------------------------------------------------------------------+"); 
+                        System.out.println("| Invalid option. Please select 1, 2, 3, 4, or 5.                         |"); 
+                        System.out.println("+-------------------------------------------------------------------------+"); 
+                        break; 
+                }
+
+                
+                System.out.println("---------------------------------------------------------------------------"); 
+
+            } catch (Exception e) {
+                System.out.println("Invalid input! Please enter a valid number."); // HANDLE EXCEPTIONS AND DISPLAY ERROR MESSAGE
+                scanner.nextLine(); 
+            }
+        }
+
+        
+        scanner.close(); 
+    }
+
+    // HELPER METHOD TO GET A VALID INTEGER INPUT 
+    private static int getIntInput(Scanner scanner, String prompt) {
+        int input = 0; 
+        while (true) { 
+            System.out.print(prompt); 
+            try {
+                input = Integer.parseInt(scanner.nextLine()); 
+                if (input <= 0) { // IF INPUT IS NON-POSITIVE
+                    System.out.println("Please enter a positive integer.");
+                    continue;
+                }
+                break; // EXIT THE LOOP IF VALID INPUT IS RECEIVED
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a valid integer."); // HANDLE EXCEPTION IF INPUT IS NOT A VALID INTEGER
+            }
+        }
+        return input; // RETURN THE VALID INTEGER
+    }
+
+    // HELPER METHOD 
+    private static double getPositiveDoubleInput(Scanner scanner, String prompt) {
+        double input = 0; 
+        while (true) { 
+            System.out.print(prompt); 
+            try {
+                input = Double.parseDouble(scanner.nextLine()); // ATTEMPT TO PARSE THE INPUT AS A DOUBLE
+                if (input <= 0) { // IF INPUT IS NON-POSITIVE, REQUEST A VALID POSITIVE NUMBER
+                    System.out.println("Please enter a positive number.");
+                    continue; 
+                }
+                break; // EXIT THE LOOP IF VALID INPUT IS RECEIVED
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a valid number."); 
+            }
+        }
+        return input; 
+    }
+}
